@@ -165,7 +165,7 @@
     if (typeof GM_info !== "undefined") {
         versionString = " - v" + GM_info.script.version;
     }
-    $("#settingContent").append('<div class="robin-chat--sidebar-widget robin-chat--report" style="text-align:center;"><a target="_blank" href="https://github.com/vartan/robin-grow">robin-grow' + versionString + '</a></div>');
+    //$("#settingContent").append('<div class="robin-chat--sidebar-widget robin-chat--report" style="text-align:center;"><a target="_blank" href="https://github.com/vartan/robin-grow">robin-grow' + versionString + '</a></div>');
     // Settings end
 
     var timeStarted = new Date();
@@ -268,7 +268,9 @@
         if (timeSinceLastChat !== undefined && (timeSinceLastChat > 60000 && now - timeStarted > 60000)) {
             window.location.reload(); // reload if we haven't seen any activity in a minute.
         }
-
+        
+        updateMutedList();
+        
         // Try to join if not currently in a chat
         if ($("#joinRobinContainer").length) {
             $("#joinRobinContainer").click();
@@ -385,6 +387,8 @@
 
     // Individual mute button /u/verox-
     var mutedList = [];
+    //var mutedList = ['JohnMaddin', 'JohhMadden', 'JohnModden', 'JahnMadden', '_John_Madden_', 'anony_meows', 'Takamiya'];
+    
     $('body').on('click', ".robin--username", function() {
         var username = $(this).text();
         var clickedUser = mutedList.indexOf(username);
@@ -400,6 +404,7 @@
             mutedList.splice(clickedUser, 1);
             listMutedUsers();
         }
+        updateMutedList();
     });
     
     $("#settingContent").append("<span style='font-size:12px;text-align:center;'>Muted Users</label>");
@@ -432,7 +437,19 @@
 
         });
     }
-
+    
+    
+    function updateMutedList() {
+          $( ".robin--username" ).each(function( index, element ) {
+              var username = $(element).text();
+              var clickedUser = mutedList.indexOf(username);
+              if (clickedUser == -1) {
+                  element.style.textDecoration = "none";
+              } else {
+                  element.style.textDecoration = "line-through";
+              }
+          });
+    }
 
     // credit to wwwroth for idea (notification audio)
     // i think this method is better
@@ -522,6 +539,8 @@
     $('#robinUserList').find('.robin--username').each(function(){
         this.style.color = colorFromName(this.textContent);
     });
+    
+    $('button.robin-chat--vote-abandon').attr("disabled", true);
 
     // When a user's status changes, they are removed from the user list and re-added with new status classes,
     // so here we watch for names being added to the user list to re-color
